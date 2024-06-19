@@ -1,0 +1,30 @@
+import deeplake
+import torch
+from sklearn import svm
+
+lfw_dataset = deeplake.load('hub://activeloop/lfw-deep-funneled')
+
+data_loader = lfw_dataset.pytorch(num_workers = 0, batch_size= 64, shuffle = False)
+
+images = []
+labels = []
+for img, label, _ in data_loader:
+    images.append(img.view(img.size(0), -1).type(torch.FloatTensor))
+    labels.append(label.type(torch.LongTensor))
+
+images = torch.cat(images)
+labels = torch.cat(labels)
+
+
+halfer = int(len(images) / 2)
+
+X_train = images[:halfer]
+X_test = images[halfer:]
+y_train = labels[:halfer]
+y_test = labels[halfer:]
+
+model = svm.SVC(kernel='linear')
+
+model.fit(X_train.numpy(), y_train.numpy())
+
+print("Accuracy:", model.score(X_test.numpy(), y_test.numpy()))
