@@ -16,15 +16,15 @@ images = torch.cat(images)
 labels = torch.cat(labels)
 
 
-halfer = int(len(images) / 2)
-
-X_train = images[:halfer]
-X_test = images[halfer:]
-y_train = labels[:halfer]
-y_test = labels[halfer:]
+# 50/50 Test/Train Split
+X_train = images[:len(images)//2]
+X_test = images[len(images)//2:]
+y_train = labels[:len(labels)//2]
+y_test = labels[len(labels)//2:]
 
 model = svm.SVC(kernel='linear')
 
 model.fit(X_train.numpy(), y_train.numpy())
+
 
 print("Accuracy:", model.score(X_test.numpy(), y_test.numpy()))
